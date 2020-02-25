@@ -23,6 +23,8 @@ Route::get('/', function () {
 });
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('logs', 'Docs\LogsViewerController@logs')->name('logs');
+Route::get('logs-viewer', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index')->name('logs.viewer');
 
 Route::group(['middleware' => ['auth']], function() {
     Route::resource('roles','RoleController');
