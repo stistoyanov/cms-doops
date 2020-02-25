@@ -11,8 +11,21 @@
 |
 */
 
+Auth::routes();
+
+// Only for local develop or debug
+if (env('APP_ENV') != 'production') {
+    Route::get('/tmp', 'TmpController@index')->name('tmp');
+}
+
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/home');
 });
 
-Route::get('/tmp', 'TmpController@index')->name('tmp');
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::group(['middleware' => ['auth']], function() {
+    Route::resource('roles','RoleController');
+    Route::resource('users','UserController');
+    Route::resource('products','ProductController');
+});

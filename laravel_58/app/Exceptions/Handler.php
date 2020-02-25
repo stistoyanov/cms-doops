@@ -2,6 +2,10 @@
 
 namespace App\Exceptions;
 
+use App\Mail\SendExceptionReportEmail;
+
+use Mail;
+
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
@@ -27,13 +31,24 @@ class Handler extends ExceptionHandler
     ];
 
     /**
-     * Report or log an exception.
-     *
-     * @param  \Exception  $exception
-     * @return void
+     * @param Exception $exception
+     * @return mixed|void
+     * @throws Exception
      */
     public function report(Exception $exception)
     {
+        // Uncomment this if needed
+        /*if (env('APP_ENV') == 'local') {
+            $data = [
+                'line' => $exception->getLine(),
+                'file' => $exception->getFile(),
+                'error' => (string)$exception->getMessage(),
+                'traceAsString' => (string)$exception->getTraceAsString(),
+            ];
+
+            Mail::to('s.stoyanov@beluga.software')->send(new SendExceptionReportEmail($data));
+        }*/
+
         parent::report($exception);
     }
 
@@ -46,6 +61,10 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof \Spatie\Permission\Exceptions\UnauthorizedException) {
+            return response()->json(['User have not permission for this page access.']);
+        }
+
         return parent::render($request, $exception);
     }
 }
