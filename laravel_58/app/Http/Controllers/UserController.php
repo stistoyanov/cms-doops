@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\DataMapper;
+
 use DB;
 use Hash;
 
@@ -21,9 +23,13 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $data = User::orderBy('id', 'DESC')->paginate(5);
+        if (!\Auth::user()->hasRole('Admin')) {
+            session()->flash('errors', 'User have not permission for this page access!');
+            return redirect('/home');
+        }
+        $data = User::where('id', '!=', User::getLoggedUserId())->orderBy('id', 'DESC')->paginate(DataMapper::DEFAULT_PAGINATE);
         return view('users.index', compact('data'))
-            ->with('i', ($request->input('page', 1) - 1) * 5);
+            ->with('i', ($request->input('page', 1) - 1) * DataMapper::DEFAULT_PAGINATE);
     }
 
     /**
@@ -33,6 +39,10 @@ class UserController extends Controller
      */
     public function create()
     {
+        if (!\Auth::user()->hasRole('Admin')) {
+            session()->flash('errors', 'User have not permission for this page access!');
+            return redirect('/home');
+        }
         $roles = Role::pluck('name', 'name')->all();
         return view('users.create', compact('roles'));
     }
@@ -46,6 +56,10 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        if (!\Auth::user()->hasRole('Admin')) {
+            session()->flash('errors', 'User have not permission for this page access!');
+            return redirect('/home');
+        }
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
@@ -71,6 +85,10 @@ class UserController extends Controller
      */
     public function show($id)
     {
+        if (!\Auth::user()->hasRole('Admin')) {
+            session()->flash('errors', 'User have not permission for this page access!');
+            return redirect('/home');
+        }
         $user = User::find($id);
         return view('users.show', compact('user'));
     }
@@ -83,6 +101,10 @@ class UserController extends Controller
      */
     public function edit($id)
     {
+        if (!\Auth::user()->hasRole('Admin')) {
+            session()->flash('errors', 'User have not permission for this page access!');
+            return redirect('/home');
+        }
         $user = User::find($id);
         $roles = Role::pluck('name', 'name')->all();
         $userRole = $user->roles->pluck('name', 'name')->all();
@@ -100,6 +122,10 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if (!\Auth::user()->hasRole('Admin')) {
+            session()->flash('errors', 'User have not permission for this page access!');
+            return redirect('/home');
+        }
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $id,
@@ -132,6 +158,14 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        if ($id < 2) {
+            session()->flash('errors', 'System user must not be deleted!');
+            return redirect('/home');
+        }
+        if (!\Auth::user()->hasRole('Admin')) {
+            session()->flash('errors', 'User have not permission for this page access!');
+            return redirect('/home');
+        }
         User::find($id)->delete();
         return redirect()->route('users.index')
             ->with('success', 'User deleted successfully');

@@ -35,13 +35,12 @@
                     <td>{{ $product->name }}</td>
                     <td>{{ $product->detail }}</td>
                     <td>
-                        <form action="{{ route('products.destroy',$product->id) }}" method="POST">
+                        <form action="{{ route('products.destroy',$product->id) }}" method="POST" style="display: none;"
+                              id="{{ 'form_' . $product->id }}">
                             <a class="btn btn-info" href="{{ route('products.show',$product->id) }}">Show</a>
                             @can('product-edit')
                                 <a class="btn btn-primary" href="{{ route('products.edit',$product->id) }}">Edit</a>
                             @endcan
-
-
                             @csrf
                             @method('DELETE')
                             @can('product-delete')
@@ -56,4 +55,6 @@
         {!! $products->links() !!}
 
     </div>
+    @include('partials.modals.update')
+    @include('partials.modals.delete')
 @endsection

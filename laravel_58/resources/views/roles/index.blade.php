@@ -38,7 +38,9 @@
                             <a class="btn btn-primary" href="{{ route('roles.edit',$role->id) }}">Edit</a>
                         @endcan
                         @can('role-delete')
-                            {!! Form::open(['method' => 'DELETE','route' => ['roles.destroy', $role->id],'style'=>'display:inline']) !!}
+                            <a href="#" data-id="{{ $role->id }}" data-toggle="modal"
+                               data-target="#confirm-delete" class="btn btn-danger">Delete</a>
+                            {!! Form::open(['method' => 'DELETE','route' => ['roles.destroy', $role->id],'style'=>'display:none', 'id' => 'form_' . $role->id]) !!}
                             {!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
                             {!! Form::close() !!}
                         @endcan
@@ -50,4 +52,6 @@
         {!! $roles->render() !!}
 
     </div>
+    @include('partials.modals.update')
+    @include('partials.modals.delete')
 @endsection

@@ -12,6 +12,8 @@ class User extends Authenticatable
     use HasRoles;
     use Notifiable;
 
+    private static $userId = null;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -38,4 +40,15 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * @return int
+     */
+    public static function getLoggedUserId()
+    {
+        if (!isset(self::$userId) && !is_null(\Auth::user())) {
+            self::$userId = \Auth::user()->id;
+        }
+        return self::$userId;
+    }
 }

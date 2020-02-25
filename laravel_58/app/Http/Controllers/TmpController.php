@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Cz\Git\GitRepository;
 
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 
 class TmpController extends Controller
 {

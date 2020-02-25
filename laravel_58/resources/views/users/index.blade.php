@@ -42,9 +42,12 @@
                     </td>
                     <td>
                         <a class="btn btn-info" href="{{ route('users.show',$user->id) }}">Show</a>
-                        <a class="btn btn-primary" href="{{ route('users.edit',$user->id) }}">Edit</a>
-                        {!! Form::open(['method' => 'DELETE','route' => ['users.destroy', $user->id],'style'=>'display:inline']) !!}
-                        {!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
+                        <a href="#" data-href="{{ route('users.edit', $user->id) }}" data-toggle="modal"
+                           data-target="#confirm-update" class="btn btn-primary">Edit</a>
+                        <a href="#" data-id="{{ $user->id }}" data-toggle="modal"
+                           data-target="#confirm-delete" class="btn btn-danger">Delete</a>
+                        {!! Form::open(['method' => 'DELETE','route' => ['users.destroy', $user->id],'style'=>'display:none', 'id' => 'form_' . $user->id]) !!}
+                        {!! Form::submit('Delete') !!}
                         {!! Form::close() !!}
                     </td>
                 </tr>
@@ -54,4 +57,6 @@
         {!! $data->render() !!}
 
     </div>
+    @include('partials.modals.update')
+    @include('partials.modals.delete')
 @endsection
