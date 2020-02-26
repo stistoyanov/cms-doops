@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Currency;
 use App\Helpers\DataMapper;
 
+use App\Helpers\Language;
+use App\Helpers\Timezone;
 use App\Product;
 
 use Illuminate\Http\Request;
@@ -43,7 +46,14 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('products.create');
+        $types = Product::$types;
+        return view('products.create', [
+            'types' => $types,
+            'dataMapper' => DataMapper::$magentoEnvSettings,
+            'currencies' => Currency::all(),
+            'languages' => Language::all(),
+            'timezones' => Timezone::all(),
+        ]);
     }
 
     /**
@@ -59,6 +69,7 @@ class ProductController extends Controller
             'detail' => 'required',
         ]);
 
+        dd($request->all());
         Product::create($request->all());
 
         return redirect()->route('products.index')
@@ -73,7 +84,11 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return view('products.show', compact('product'));
+        $types = Product::$types;
+        return view('products.show', [
+            'types' => $types,
+            'product' => $product,
+        ]);
     }
 
     /**
@@ -84,7 +99,11 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('products.edit', compact('product'));
+        $types = Product::$types;
+        return view('products.edit', [
+            'types' => $types,
+            'product' => $product,
+        ]);
     }
 
     /**
