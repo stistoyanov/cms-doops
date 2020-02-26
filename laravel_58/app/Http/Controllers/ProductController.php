@@ -49,6 +49,7 @@ class ProductController extends Controller
         $types = Product::$types;
         return view('products.create', [
             'types' => $types,
+            'branchNameIdentifier' => DataMapper::BRANCH_NAME_IDENTIFIER,
             'dataMapper' => DataMapper::$magentoEnvSettings,
             'currencies' => Currency::all(),
             'languages' => Language::all(),
@@ -64,13 +65,39 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        request()->validate([
-            'name' => 'required',
-            'detail' => 'required',
-        ]);
+        if ($request->has('type') && $request->get('type') == Product::getTypeIndex(Product::TYPE_MAGENTO_2)) {
+            request()->validate([
+                'name' => 'required|max:255',
+                'detail' => 'required|max:1000',
+                DataMapper::BRANCH_NAME_IDENTIFIER => 'required|min:6|max:255',
+                DataMapper::MAGENTO_MYSQL_HOST => 'required|min:2|max:255',
+                DataMapper::MAGENTO_MYSQL_USER => 'required|min:2|max:255',
+                DataMapper::MAGENTO_MYSQL_ROOT_PASSWORD => 'required|min:6|confirmed',
+                DataMapper::MAGENTO_MYSQL_DATABASE => 'required|min:2|max:255',
+                DataMapper::MAGENTO_MYSQL_PASSWORD => 'required|min:6|confirmed',
+                DataMapper::MAGENTO_LANGUAGE => 'required',
+                DataMapper::MAGENTO_TIMEZONE => 'required',
+                DataMapper::MAGENTO_DEFAULT_CURRENCY => 'required',
+                DataMapper::MAGENTO_URL => 'required|url',
+                DataMapper::MAGENTO_BACKEND_FRONTNAME => 'required|max:255',
+                DataMapper::MAGENTO_USE_SECURE => 'required',
+                DataMapper::MAGENTO_BASE_URL_SECURE => 'required',
+                DataMapper::MAGENTO_USE_SECURE_ADMIN => 'required',
+                DataMapper::MAGENTO_ADMIN_FIRSTNAME => 'required|min:2|max:255',
+                DataMapper::MAGENTO_ADMIN_LASTNAME => 'required|min:2|max:255',
+                DataMapper::MAGENTO_ADMIN_EMAIL => 'required|max:255|email',
+                DataMapper::MAGENTO_ADMIN_USERNAME => 'required|min:2|max:255',
+                DataMapper::MAGENTO_ADMIN_PASSWORD => 'required|min:6|confirmed',
+            ]);
+        } else {
+            // No other types for now so we redirect to products
+            return redirect()->route('products.index')
+                ->with('success', 'Product created successfully.');
+        }
 
-        dd($request->all());
-        Product::create($request->all());
+        $productId = Product::selfCreate($request->all());
+
+        // TODO - next put in queue for handling
 
         return redirect()->route('products.index')
             ->with('success', 'Product created successfully.');
@@ -86,8 +113,13 @@ class ProductController extends Controller
     {
         $types = Product::$types;
         return view('products.show', [
-            'types' => $types,
             'product' => $product,
+            'types' => $types,
+            'branchNameIdentifier' => DataMapper::BRANCH_NAME_IDENTIFIER,
+            'dataMapper' => DataMapper::$magentoEnvSettings,
+            'currencies' => Currency::all(),
+            'languages' => Language::all(),
+            'timezones' => Timezone::all(),
         ]);
     }
 
@@ -101,8 +133,13 @@ class ProductController extends Controller
     {
         $types = Product::$types;
         return view('products.edit', [
-            'types' => $types,
             'product' => $product,
+            'types' => $types,
+            'branchNameIdentifier' => DataMapper::BRANCH_NAME_IDENTIFIER,
+            'dataMapper' => DataMapper::$magentoEnvSettings,
+            'currencies' => Currency::all(),
+            'languages' => Language::all(),
+            'timezones' => Timezone::all(),
         ]);
     }
 

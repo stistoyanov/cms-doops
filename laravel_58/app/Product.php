@@ -2,6 +2,11 @@
 
 namespace App;
 
+use App\Helpers\DataMapper;
+
+use Log;
+use Exception;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -19,9 +24,9 @@ class Product extends Model
      */
     protected $fillable = [
         'name',
-        'detail',
-        'type',
         'data',
+        'type',
+        'detail',
     ];
 
     /**
@@ -44,6 +49,77 @@ class Product extends Model
                 return $i;
             }
         }
+
         return 1;
+    }
+
+    /**
+     * @param $string
+     * @return mixed
+     */
+    private static function sanitise($string)
+    {
+        $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+        $string = str_replace(' ', '_', $string);
+        $string = substr($string, 0, 25);
+
+        return $string;
+    }
+
+    /**
+     * @param array $request
+     * @return array
+     */
+    private static function handleMagento($request = [])
+    {
+        $request[DataMapper::BRANCH_NAME_IDENTIFIER] = self::sanitise($request[DataMapper::BRANCH_NAME_IDENTIFIER]);
+        $request[DataMapper::MAGENTO_MYSQL_DATABASE] = self::sanitise($request[DataMapper::MAGENTO_MYSQL_DATABASE]);
+
+        $i = -1;
+        foreach (DataMapper::$branches as $key) {
+            $i++;
+            $request['data']['branches'][$i] = [
+                'id' => $i,
+                'key' => $key,
+                'name' => $request[DataMapper::BRANCH_NAME_IDENTIFIER] . '_' . $key,
+            ];
+        }
+
+        $request['data']['request'] = $request;
+
+        return $request;
+    }
+
+    /**
+     * @param array $request
+     * @return int
+     */
+    public static function selfCreate($request = [])
+    {
+        foreach (self::all() as $product) {
+            if ($product->name == $request['name'] || $product->data[DataMapper::BRANCH_NAME_IDENTIFIER] == $request[DataMapper::BRANCH_NAME_IDENTIFIER]) {
+                return 0;
+            }
+        }
+
+        if ($request['type'] == self::getTypeIndex(self::TYPE_MAGENTO_2)) {
+            $request = self::handleMagento($request);
+        }
+
+        try {
+            $product = self::create([
+                'name' => $request['name'],
+                'data' => $request['data'],
+                'type' => $request['type'],
+                'detail' => $request['detail'],
+            ]);
+        } catch (Exception $e) {
+            Log::error(__CLASS__ . '-' . __METHOD__ . ' failed with message: ' . $e->getMessage());
+            return 0;
+        }
+
+        Log::info('Product: ' . $product->id . ' successfully created.');
+
+        return $product->id;
     }
 }

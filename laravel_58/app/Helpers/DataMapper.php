@@ -6,6 +6,20 @@ class DataMapper
 {
     const DEFAULT_PAGINATE = 15;
 
+    const BRANCH_NAME_IDENTIFIER = 'branches_name';
+
+    const BRANCH_LOCAL = 'local';
+    const BRANCH_DEVELOPMENT = 'development';
+    const BRANCH_PRODUCTION = 'production';
+    const BRANCH_LIVE = 'live';
+
+    public static $branches = [
+        self::BRANCH_LOCAL => self::BRANCH_LOCAL,
+        self::BRANCH_DEVELOPMENT => self::BRANCH_DEVELOPMENT,
+        self::BRANCH_PRODUCTION => self::BRANCH_PRODUCTION,
+        self::BRANCH_LIVE => self::BRANCH_LIVE,
+    ];
+
     const PERMISSION_ROLE_LIST = 'role-list';
     const PERMISSION_ROLE_CREATE = 'role-create';
     const PERMISSION_ROLE_EDIT = 'role-edit';
