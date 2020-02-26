@@ -93,4 +93,25 @@ class DataMapper
         'MAGENTO_ADMIN_USERNAME' => self::MAGENTO_ADMIN_USERNAME,
         'MAGENTO_ADMIN_PASSWORD' => self::MAGENTO_ADMIN_PASSWORD,
     ];
+
+    public static $magentoEnvIntegers = [
+        self::MAGENTO_USE_SECURE,
+        self::MAGENTO_BASE_URL_SECURE,
+        self::MAGENTO_USE_SECURE_ADMIN,
+    ];
+
+    public static $magentoEnvStrings = [
+        self::MAGENTO_MYSQL_HOST,
+        self::MAGENTO_MYSQL_ROOT_PASSWORD,
+        self::MAGENTO_MYSQL_USER,
+        self::MAGENTO_MYSQL_PASSWORD,
+        self::MAGENTO_MYSQL_DATABASE,
+        self::MAGENTO_URL,
+        self::MAGENTO_BACKEND_FRONTNAME,
+        self::MAGENTO_ADMIN_FIRSTNAME,
+        self::MAGENTO_ADMIN_LASTNAME,
+        self::MAGENTO_ADMIN_EMAIL,
+        self::MAGENTO_ADMIN_USERNAME,
+        self::MAGENTO_ADMIN_PASSWORD,
+    ];
 }

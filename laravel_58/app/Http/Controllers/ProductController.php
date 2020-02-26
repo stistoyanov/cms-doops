@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\Currency;
-use App\Helpers\DataMapper;
+use App\Product;
 
+use App\Helpers\Currency;
 use App\Helpers\Language;
 use App\Helpers\Timezone;
-use App\Product;
+use App\Helpers\DataMapper;
+
+use App\Jobs\CreateMagentoProductJob;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -96,8 +98,11 @@ class ProductController extends Controller
         }
 
         $productId = Product::selfCreate($request->all());
+        if ($productId < 1) {
+            return redirect()->back()->withInput($request)->withErrors(['Product not create']);
+        }
 
-        // TODO - next put in queue for handling
+        //dispatch(new CreateMagentoProductJob($productId));
 
         return redirect()->route('products.index')
             ->with('success', 'Product created successfully.');

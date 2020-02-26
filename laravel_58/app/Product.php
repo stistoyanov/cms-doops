@@ -75,6 +75,13 @@ class Product extends Model
         $request[DataMapper::BRANCH_NAME_IDENTIFIER] = self::sanitise($request[DataMapper::BRANCH_NAME_IDENTIFIER]);
         $request[DataMapper::MAGENTO_MYSQL_DATABASE] = self::sanitise($request[DataMapper::MAGENTO_MYSQL_DATABASE]);
 
+        unset($request['type']);
+        unset($request['_token']);
+        unset($request[DataMapper::MAGENTO_MYSQL_PASSWORD . '_confirmation']);
+        unset($request[DataMapper::MAGENTO_ADMIN_PASSWORD . '_confirmation']);
+        unset($request[DataMapper::MAGENTO_MYSQL_ROOT_PASSWORD . '_confirmation']);
+        $request['data']['request'] = $request;
+
         $i = -1;
         foreach (DataMapper::$branches as $key) {
             $i++;
@@ -84,8 +91,6 @@ class Product extends Model
                 'name' => $request[DataMapper::BRANCH_NAME_IDENTIFIER] . '_' . $key,
             ];
         }
-
-        $request['data']['request'] = $request;
 
         return $request;
     }
